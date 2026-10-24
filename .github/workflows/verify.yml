@@ -30,7 +30,7 @@ concurrency:
 env:
   LOG_NAME: log-staging.emojery.app
   API: https://api-staging.emojery.app
-  VERIFIER_COMMIT: 3ccca7f5e8ca8cb90a1f4e021909e26707b597a9
+  VERIFIER_COMMIT: 3a82dd09558b685727f8eff38bf16794485d6382
 
 jobs:
   check:
