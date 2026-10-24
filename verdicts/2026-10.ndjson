@@ -3,3 +3,4 @@
 {"at":"2026-10-24T16:32:21.811Z","verdict":"PASS","origin":null,"size":null,"notes":[],"jwksAdded":[]}
 {"at":"2026-10-24T18:56:47.632Z","verdict":"PASS","origin":null,"size":null,"notes":[],"jwksAdded":[]}
 {"at":"2026-10-24T21:29:40.194Z","verdict":"PASS","origin":null,"size":null,"notes":[],"jwksAdded":[]}
+{"at":"2026-10-24T22:10:05.465Z","verdict":"FAIL","origin":null,"size":null,"notes":["leaf 0: ENROLL from iss https://api-staging.emojery.app/test-oidc and aud emojery-staging-test, which this log does not admit","leaf 1: ENROLL from iss https://api-staging.emojery.app/test-oidc and aud emojery-staging-test, which this log does not admit","leaf 2: ENROLL from iss https://api-staging.emojery.app/test-oidc and aud emojery-staging-test, which this log does not admit","the mirror holds no anchor of log-staging.emojery.app/g0 yet"],"jwksAdded":[]}
