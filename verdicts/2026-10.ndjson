@@ -8,3 +8,4 @@
 {"at":"2026-10-24T23:35:51.626Z","verdict":"PASS","origin":"log-staging.emojery.app/g0","size":15,"notes":[],"jwksAdded":[]}
 {"at":"2026-10-24T23:43:11.117Z","verdict":"PASS","origin":"log-staging.emojery.app/g0","size":15,"notes":["a rewind dropped 18 published entries of log-staging.emojery.app/g0, 15 of them anchored"],"jwksAdded":[]}
 {"at":"2026-10-25T01:33:35.275Z","verdict":"PASS","origin":"log-staging.emojery.app/g1","size":1019,"notes":["the mirror holds no anchor of log-staging.emojery.app/g1 yet","a rewind dropped 18 published entries of log-staging.emojery.app/g0, 16 of them anchored"],"jwksAdded":[]}
+{"at":"2026-10-25T06:43:24.846Z","verdict":"WAIT","origin":"log-staging.emojery.app/g1","size":1022,"notes":["the mirror is 20643 s behind the bucket's newest anchor: anchors above 1019 are not in the shared history yet","a rewind dropped 18 published entries of log-staging.emojery.app/g0, 16 of them anchored"],"jwksAdded":[]}
