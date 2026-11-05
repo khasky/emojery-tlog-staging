@@ -93,10 +93,13 @@ jobs:
       - name: Run the verifier
         id: run
         if: steps.status.outputs.skip != 'true'
+        env:
+          SCHEDULE: ${{ github.event.schedule }}
+          FULL: ${{ inputs.full }}
         run: |
           mkdir -p "$RUNNER_TEMP/state"
           full=""
-          if [ "${{ github.event.schedule }}" = "23 2 * * *" ] || [ "${{ inputs.full }}" = "true" ]; then full="--full"; fi
+          if [ "$SCHEDULE" = "23 2 * * *" ] || [ "$FULL" = "true" ]; then full="--full"; fi
           set +e
           node verifier/packages/verifier/src/cli.js --log "$LOG_NAME" --state "$RUNNER_TEMP/state/state.json" $full \
             --update-mirror mirror --message-file "$RUNNER_TEMP/message.txt"
@@ -136,14 +139,20 @@ jobs:
       contents: write
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
 
       - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
         with:
           name: changes
           path: ${{ runner.temp }}/in
 
+      # The token reaches git only in this step, not through the checkout's saved credentials.
       - name: Commit
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
+          git remote set-url origin "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           for attempt in 1 2 3 4 5; do
@@ -171,8 +180,9 @@ jobs:
         if: always()
         env:
           PING: ${{ secrets.HEALTHCHECKS_PING_URL }}
+          JOB_STATUS: ${{ job.status }}
         run: |
           [ -n "$PING" ] || exit 0
           suffix=""
-          [ "${{ job.status }}" = "success" ] || suffix="/fail"
+          [ "$JOB_STATUS" = "success" ] || suffix="/fail"
           curl -fsS --max-time 10 "$PING$suffix" >/dev/null || true
