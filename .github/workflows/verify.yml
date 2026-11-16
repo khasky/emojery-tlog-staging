@@ -2,7 +2,9 @@ name: Verify
 
 # Runs emojery-verifier against log-staging.emojery.app every 30 minutes (the quick check)
 # and once a night (--full), and commits what the shared history needs: new anchors at any
-# verdict, the providers' new keys, index.json after a PASS, and one verdict line.
+# verdict, the providers' new keys, index.json after a PASS, and one verdict line. A quick run
+# whose only change is a verdict line equal to the previous one but for its time commits
+# nothing; the nightly run always commits its line. The healthchecks.io ping shows each run.
 #
 # Two jobs, so the token that can write to this repository never runs the verifier: `check`
 # reads only and hands its changes over as an artifact; `commit` applies them.
@@ -100,6 +102,7 @@ jobs:
           mkdir -p "$RUNNER_TEMP/state"
           full=""
           if [ "$SCHEDULE" = "23 2 * * *" ] || [ "$FULL" = "true" ]; then full="--full"; fi
+          echo "full=${full:+true}" >> "$GITHUB_OUTPUT"
           set +e
           node verifier/packages/verifier/src/cli.js --log "$LOG_NAME" --state "$RUNNER_TEMP/state/state.json" $full \
             --update-mirror mirror --message-file "$RUNNER_TEMP/message.txt"
@@ -114,9 +117,22 @@ jobs:
 
       - name: Collect the changes
         if: steps.status.outputs.skip != 'true'
+        env:
+          FULL_RUN: ${{ steps.run.outputs.full }}
         run: |
           mkdir -p "$RUNNER_TEMP/out"
           cd mirror
+          # A quick run that only repeats the previous verdict (all but `at`) adds no line.
+          changed=$(git status --porcelain)
+          if [ "$FULL_RUN" != "true" ] && [[ "$changed" =~ ^\ M\ verdicts/[0-9]{4}-[0-9]{2}\.ndjson$ ]]; then
+            file=${changed# M }
+            new=$(tail -n 1 "$file" | jq -cS 'del(.at)')
+            old=$(git show "HEAD:$file" | tail -n 1 | jq -cS 'del(.at)')
+            if [ -n "$new" ] && [ "$new" = "$old" ]; then
+              git checkout -- "$file"
+              echo "the verdict repeats the previous one: nothing to commit"
+            fi
+          fi
           git add -A
           git diff --cached --name-only > "$RUNNER_TEMP/out/files.txt"
           tar -cf "$RUNNER_TEMP/out/changes.tar" -T "$RUNNER_TEMP/out/files.txt"
