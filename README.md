@@ -8,7 +8,7 @@ A partial mirror of the Emojery transparency log of the staging deployment, `log
 - `verdicts/<YYYY-MM>.ndjson` — one line per verification run: verdict, origin, size, notes.
 - `segments.json` — where each month's entries are archived (Zenodo, Internet Archive), once that archive exists.
 
-A workflow in this repository runs [`emojery-verifier`](https://github.com/khasky/emojery-verifier) every 30 minutes and commits the result; only that workflow writes here. The operator runs it, so this is a record, not an independent audit — run the verifier yourself (`npx @emojery/verifier --log log-staging.emojery.app`) for that.
+A workflow in this repository runs [`emojery-verifier`](https://github.com/khasky/emojery-verifier) every 30 minutes and commits what changed (a run that repeats the previous verdict adds no line; the nightly full run always does); only that workflow writes here. The operator runs it, so this is a record, not an independent audit — run the verifier yourself (`npx @emojery/verifier --log log-staging.emojery.app`) for that.
 
 The log is pseudonymous. Do not attempt to re-identify pseudonyms in this log or link them with other data about a person.
 
