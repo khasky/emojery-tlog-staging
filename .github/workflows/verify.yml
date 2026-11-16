@@ -43,8 +43,11 @@ jobs:
       skip: ${{ steps.status.outputs.skip }}
       verdict: ${{ steps.run.outputs.verdict }}
     steps:
+      # The branch's tip, not the commit the run was queued at: a run that waited for the one
+      # before it would otherwise rewrite that run's verdict line away.
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
+          ref: ${{ github.ref }}
           path: mirror
           persist-credentials: false
 
