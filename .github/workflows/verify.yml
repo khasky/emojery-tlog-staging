@@ -189,16 +189,16 @@ jobs:
       - name: Tell Discord about a FAIL
         if: needs.check.outputs.verdict == 'FAIL'
         env:
-          WEBHOOK: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          WEBHOOK: ${{ secrets.CI_ALERT_DISCORD_WEBHOOK_URL }}
         run: |
           [ -n "$WEBHOOK" ] || exit 0
-          jq -n --arg c "emojery-tlog-staging: verifier FAIL - $(cat "$RUNNER_TEMP/in/message.txt")" '{content: $c}' |
+          jq -n --arg c "$GITHUB_REPOSITORY: verifier FAIL - $(cat "$RUNNER_TEMP/in/message.txt")" '{content: $c}' |
             curl -fsS -H 'content-type: application/json' -d @- "$WEBHOOK" >/dev/null
 
       - name: Ping healthchecks.io
         if: always()
         env:
-          PING: ${{ secrets.HEALTHCHECKS_PING_URL }}
+          PING: ${{ secrets.HEALTHCHECK_VERIFY_URL }}
           JOB_STATUS: ${{ job.status }}
         run: |
           [ -n "$PING" ] || exit 0
